@@ -152,11 +152,11 @@ def make_latex_stoich_table_row(species: str, symbol: str, coefficient, contains
     return c1 + ' & ' + c2 + ' & ' + c3 + ' & ' + c4 + ' & ' + c5 + ' & ' + c6
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # the main runnable, apparently you need this lmao who would've thunk
     pass
 
+
 theta_string = '\u03b8'
-# theta_string = '\u03f4'
 epsilon_string = '\u03b5'
 
 chemical_equation_string = input('Enter your chemical equation:\n')  # get the input chemical equation
