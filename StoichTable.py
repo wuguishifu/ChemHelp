@@ -160,6 +160,9 @@ theta_string = '\u03b8'
 epsilon_string = '\u03b5'
 
 chemical_equation_string = input('Enter your chemical equation:\n')  # get the input chemical equation
+starting_materials = input('Which of these materials are present at time t=0?\n'
+                           'Please enter a sequence of 1\'s and 0\'s, where 1\'s indicate starting presence.\n')
+
 chemical_equation_string = chemical_equation_string.replace(" ", "")  # get rid of all the spaces in the equation
 two_sides = chemical_equation_string.split('->', 2)  # split the equation into reactants and products
 reactants_list = two_sides[0].split('+')  # split all the reactants up by the + sign
@@ -196,11 +199,20 @@ for i in range(len(reactants_list)):
 species_list = reactants_list + products_list  # add the reactants list and products list together
 coefficient_list = reactants_coefficients + products_coefficients  # add the reactants coefficients list and products coefficients list together
 
+# create a list of booleans determining if a species is present in the reactor at time t=0
+starting_materials = starting_materials.ljust(len(species_list), '0')  # pad the string with extra 0's in case not enough integers were provided
+presence_booleans = []
+for i in range(len(starting_materials)):
+    if starting_materials[i] == str(1):
+        presence_booleans.append(True)
+    elif starting_materials[i] == str(0):
+        presence_booleans.append(False)
+
 # make the stoich rows
 stoich_rows = []
 for i in range(len(species_list)):
     species_symbol = chr(ord('@') + i + 1)
-    stoich_rows.append(make_stoich_table_row(species_list[i], species_symbol, coefficient_list[i], True))
+    stoich_rows.append(make_stoich_table_row(species_list[i], species_symbol, coefficient_list[i], presence_booleans[i]))
 
 # print out the stoich table
 print('_' * 119)
@@ -211,13 +223,13 @@ for row in stoich_rows:
     print(f'| {row[0]:<10} | {row[1]:<10} | {row[2]:<10} | {row[3]:<20} | {row[4]:<20} | {row[5]:<30} |')
 print(f'|_{"_" * 10}_|_{"_" * 10}_|_{"_" * 10}_|_{"_" * 20}_|_{"_" * 20}_|_{"_" * 30}_|')
 
-print('LaTeX:')
+print('\nLaTeX:\n')
 # make the actual latex table
 latex_table_string = '\\begin{tabular}{|c|c|c|c|c|c|}\n\t\\hline\n'
 latex_table_string += '\tSpecies & Symbol & Initial & Change & Outlet & Concentration\\\\\n\t\\hline\n'
 for i in range(len(species_list)):
     species_symbol = chr(ord('@') + i + 1)
-    latex_table_string += '\t' + make_latex_stoich_table_row(species_list[i], species_symbol, coefficient_list[i], True)
+    latex_table_string += '\t' + make_latex_stoich_table_row(species_list[i], species_symbol, coefficient_list[i], presence_booleans[i])
     latex_table_string += '\\\\\n\t\\hline\n'
 latex_table_string += '\\end{tabular}'
 print(latex_table_string)
