@@ -101,6 +101,57 @@ def make_stoich_table_row(species: str, symbol: str, coefficient, contains: bool
     return [species, symbol, initial, change, outlet, concentration]
 
 
+# makes a row of the stoich table as a list of strings per each column
+# species is the chemical formula of the species
+# symbol is the stoich table symbol (A, B, C, etc...)
+# negative coefficient means reactant, positive coefficient means product
+# contains is if the reactor contains some of the species at time = 0
+def make_latex_stoich_table_row(species: str, symbol: str, coefficient, contains: bool):
+    # make the species column string
+    c1 = '$\\ch{' + species.translate(str.maketrans("₀₁₂₃₄₅₆₇₈₉", "0123456789")) + '}$'
+
+    # make the symbol string
+    c2 = symbol
+
+    # make the initial column string
+    c3 = '$F_{' + symbol + '0' + '}$' if contains else '0'
+
+    # make the change column string
+    if coefficient == 1:
+        c4 = '$+F_{A0}X$'
+    elif coefficient == -1:
+        c4 = '$-F_{A0}X$'
+    else:
+        c4 = '$' + str(coefficient) + 'F_{A0}X$' if coefficient < 0 else '$+' + str(coefficient) + 'F_{A0}X$'
+
+    # make the outlet column string
+    if symbol == 'A':
+        c5 = '$F_{A0}(1-X)$'
+    elif coefficient == 1:
+        c5 = '$F_{A0}(\\Theta_{' + symbol + '}+X)$'
+    elif coefficient == -1:
+        c5 = '$F_{A0}(\\Theta_{' + symbol + '}-X)$'
+    elif coefficient < 0:
+        c5 = '$F_{A0}(\\Theta_{' + symbol + '}' + str(coefficient) + 'X)$'
+    else:
+        c5 = '$F_{A0}(\\Theta_{' + symbol + '}+' + str(coefficient) + 'X)$'
+
+    # make the concentration column string
+    if symbol == 'A':
+        c6 = '$C_{A}=C_{A0}\\frac{1-X}{1+\\varepsilon{}X}$'  # C_A = C_{A0} \frac{-X}{1+eX}
+    elif coefficient == 1:
+        c6 = '$C_{' + symbol + '}=C_{A0}\\frac{\\Theta_{' + symbol + '}+X}{1+\\varepsilon{}X}$'
+    elif coefficient == -1:
+        c6 = '$C_{' + symbol + '}=C_{A0}\\frac{\\Theta_{' + symbol + '}-X}{1+\\varepsilon{}X}$'
+    elif coefficient < 0:
+        c6 = '$C_{' + symbol + '}=C_{A0}\\frac{\\Theta_{' + symbol + '}' + str(coefficient) + 'X}{1+\\varepsilon{}X}$'
+    else:
+        c6 = '$C_{' + symbol + '}=C_{A0}\\frac{\\Theta_{' + symbol + '}+' + str(coefficient) + 'X}{1+\\varepsilon{}X}$'
+
+    # make the row string
+    return c1 + ' & ' + c2 + ' & ' + c3 + ' & ' + c4 + ' & ' + c5 + ' & ' + c6
+
+
 if __name__ == '__main__':
     pass
 
@@ -153,8 +204,20 @@ for i in range(len(species_list)):
 
 # print out the stoich table
 print('_' * 119)
-print(f'| {"Species":<10} | {"Symbol":<10} | {"Initial":<10} | {"Change":<20} | {"Outlet":<20} | {"Concentration":<30} |')
+print(
+    f'| {"Species":<10} | {"Symbol":<10} | {"Initial":<10} | {"Change":<20} | {"Outlet":<20} | {"Concentration":<30} |')
 for row in stoich_rows:
-    print(f'|_{"_"*10}_|_{"_"*10}_|_{"_"*10}_|_{"_"*20}_|_{"_"*20}_|_{"_"*30}_|')
+    print(f'|_{"_" * 10}_|_{"_" * 10}_|_{"_" * 10}_|_{"_" * 20}_|_{"_" * 20}_|_{"_" * 30}_|')
     print(f'| {row[0]:<10} | {row[1]:<10} | {row[2]:<10} | {row[3]:<20} | {row[4]:<20} | {row[5]:<30} |')
-print(f'|_{"_"*10}_|_{"_"*10}_|_{"_"*10}_|_{"_"*20}_|_{"_"*20}_|_{"_"*30}_|')
+print(f'|_{"_" * 10}_|_{"_" * 10}_|_{"_" * 10}_|_{"_" * 20}_|_{"_" * 20}_|_{"_" * 30}_|')
+
+print('LaTeX:')
+# make the actual latex table
+latex_table_string = '\\begin{tabular}{|c|c|c|c|c|c|}\n\t\\hline\n'
+latex_table_string += '\tSpecies & Symbol & Initial & Change & Outlet & Concentration\\\\\n\t\\hline\n'
+for i in range(len(species_list)):
+    species_symbol = chr(ord('@') + i + 1)
+    latex_table_string += '\t' + make_latex_stoich_table_row(species_list[i], species_symbol, coefficient_list[i], True)
+    latex_table_string += '\\\\\n\t\\hline\n'
+latex_table_string += '\\end{tabular}'
+print(latex_table_string)
