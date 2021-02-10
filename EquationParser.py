@@ -54,5 +54,6 @@ product_coeffs = coefficients[-num_products:]
 reactants = species[0:num_reactants]
 products = species[-num_products:]
 
+# print out the final products and reactants lists of tuples
 print('Reactants: ' + str(list(zip(reactant_coeffs, reactants))))
 print('Products:  ' + str(list(zip(product_coeffs, products))))
