@@ -233,3 +233,5 @@ for i in range(len(species_list)):
     latex_table_string += '\\\\\n\t\\hline\n'
 latex_table_string += '\\end{tabular}'
 print(latex_table_string)
+
+print('done')
