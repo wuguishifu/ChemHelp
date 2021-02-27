@@ -1,10 +1,3 @@
-# test equation 1: 2H2 + O2 -> 2H2O
-# test equation 2: A + 2B -> 3C + 4D
-# test equation 3: A + B -> C + D
-# test equation 4: 0.5A + B -> 2C + 0.25D
-# test equation 5: 2NaOH + H2SO4 -> Na2SO4 + 2H2O
-
-
 # returns a list of coefficients from a list of chemical species
 def get_coefficients(species):
     coefficients = []
@@ -233,5 +226,3 @@ for i in range(len(species_list)):
     latex_table_string += '\\\\\n\t\\hline\n'
 latex_table_string += '\\end{tabular}'
 print(latex_table_string)
-
-print('done')
